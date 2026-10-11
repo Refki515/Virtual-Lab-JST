@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Lab JST - Universal Dataset | Supervised Learning</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js (Local offline fallback) -->
+    <script src="js/chart.js"></script>
+    
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ============ HEADER ============ -->
+    <header class="app-header">
+        <div class="app-container header-inner">
+            <div class="header-brand">
+                <div class="header-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div>
+                    <div class="header-title">Virtual Lab JST</div>
+                    <div class="header-subtitle">Supervised Learning - Universal Dataset</div>
+                </div>
+            </div>
+            <div class="header-badge">
+                <i class="fas fa-cube"></i> Upload Dataset Sendiri
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ MAIN ============ -->
+    <main class="app-container">
+
+        <!-- UPLOAD ZONE -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-upload" style="color: var(--primary)"></i>
+                    Upload Dataset CSV
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="document.getElementById('helpModal').classList.add('active')">
+                    <i class="fas fa-question-circle"></i> Bantuan
+                </button>
+            </div>
+            
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-icon"><i class="fas fa-file-csv"></i></div>
+                <div class="upload-text">Klik atau drag file CSV ke sini</div>
+                <div class="upload-hint">Format: CSV (header otomatis terdeteksi sebagai nama kolom)</div>
+                <input type="file" id="file-input" accept=".csv">
+            </div>
+
+            <div id="dataset-info" class="dataset-info" style="margin-top: 16px; display: none;">
+                <i class="fas fa-database"></i>
+                <span>Menunggu upload dataset...</span>
+            </div>
+        </div>
+
+        <!-- CONFIG & CONTROLS -->
+        <div class="main-grid">
+            
+            <!-- LEFT: Config Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-sliders" style="color: var(--primary)"></i>
+                        Konfigurasi
+                    </div>
+                </div>
+
+                <!-- Column & Target Selector -->
+                <div id="column-selector">
+                    <div class="form-group">
+                        <label class="form-label">Target Kolom (Label)</label>
+                        <select id="target-select" class="form-select">
+                            <option value="">-- Upload dataset dulu --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fitur Input (Pilih minimal 2)</label>
+                        <div class="feature-selector" id="feature-list">
+                            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                Upload dataset untuk melihat daftar fitur
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Algorithm -->
+                <div class="form-group">
+                    <label class="form-label">Algoritma JST</label>
+                    <select id="algo-select" class="form-select">
+                        <option value="perceptron">Perceptron (Step Function)</option>
+                        <option value="hebb">Hebb Rule (Bipolar)</option>
+                        <option value="delta">Delta Rule (LMS)</option>
+                        <option value="backpropagation">Backpropagation (Sigmoid)</option>
+                    </select>
+                </div>
+
+                <!-- Hyperparameters -->
+                <div class="form-group">
+                    <label class="form-label">Learning Rate (α)</label>
+                    <input type="number" id="lr-input" class="form-control" value="0.1" step="0.01" min="0.001" max="1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Max Epoch</label>
+                    <input type="number" id="epoch-input" class="form-control" value="200" step="10" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Threshold (Batas Keputusan)</label>
+                    <input type="number" id="threshold-input" class="form-control" value="0.5" step="0.05" min="0" max="1">
+                </div>
+
+                <div class="form-group" id="hidden-layer-group">
+                    <label class="form-label">Jumlah Hidden Layer (untuk Backprop)</label>
+                    <input type="number" id="hidden-input" class="form-control" value="5" step="1" min="1" max="20">
+                </div>
+
+                <!-- Training Controls -->
+                <div class="ctrl-grid" style="margin-top: 20px;">
+                    <button class="btn btn-outline" id="btn-reset">
+                        <i class="fas fa-rotate-left"></i> Reset
+                    </button>
+                    <button class="btn btn-outline" id="btn-nextstep" disabled>
+                        <i class="fas fa-forward-step"></i> Next Step
+                    </button>
+                    <button class="btn btn-success" id="btn-fasttrain" disabled>
+                        <i class="fas fa-bolt"></i> Fast Train
+                    </button>
+                    <button class="btn btn-primary" id="btn-autorun" disabled>
+                        <i class="fas fa-play"></i> Auto Run
+                    </button>
+                </div>
+
+                <button class="btn btn-accent btn-block" id="btn-download-model" style="margin-top: 8px;" disabled>
+                    <i class="fas fa-download"></i> Download Model (JSON)
+                </button>
+            </div>
+
+            <!-- RIGHT: Visualization -->
+            <div>
+                <!-- Stats -->
+                <div class="stats-row" id="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-label">Status</div>
+                        <div class="stat-value status-ready">Siap</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Epoch</div>
+                        <div class="stat-value epoch">0/0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Error</div>
+                        <div class="stat-value error">0.000000</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Dataset Split</div>
+                        <div class="stat-value weights">0 / 0</div>
+                    </div>
+                </div>
+
+                <!-- Network Diagram -->
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-diagram-project" style="color: var(--primary)"></i>
+                            Struktur Jaringan
+                        </div>
+                    </div>
+                    <div class="viz-canvas-wrap">
+                        <canvas id="network-canvas" width="900" height="420"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERROR CHART & LOG -->
+        <div class="viz-grid" style="margin-top: 20px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-line" style="color: var(--accent)"></i>
+                        Training Error (MSE)
+                    </div>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="error-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-terminal" style="color: var(--primary)"></i>
+                        Log Konsol
+                    </div>
+                </div>
+                <div class="log-console" id="log-console">
+                    [Siap] Muat dataset CSV untuk memulai training
+                </div>
+            </div>
+        </div>
+
+        <!-- TESTING PANEL -->
+        <div class="bottom-grid" style="margin-top: 20px; margin-bottom: 40px;">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-vial" style="color: var(--success)"></i>
+                        Uji Model (Prediksi)
+                    </div>
+                </div>
+                <div id="test-inputs" class="test-inputs">
+                    <p style="color: var(--text-muted); font-size: 13px;">Setelah training, masukkan nilai fitur baru untuk prediksi</p>
+                </div>
+                <button class="btn btn-success btn-block" id="btn-predict" disabled>
+                    <i class="fas fa-magic"></i> Prediksi Sekarang
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-lightbulb" style="color: var(--warning)"></i>
+                        Hasil Prediksi
+                    </div>
+                </div>
+                <div id="test-result" class="test-result-box">
+                    <div class="test-result-label">Hasil</div>
+                    <div class="test-result-value neutral">-</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="app-footer">
+        <p>Virtual Lab JST © 2024 | Supervised Learning dengan Upload Dataset Universal</p>
+        <p>Algoritma: Perceptron, Hebb Rule, Delta Rule, Backpropagation</p>
+    </footer>
+
+    <!-- ============ HELP MODAL ============ -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="document.getElementById('helpModal').classList.remove('active')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-title">Panduan Penggunaan</div>
+            <div class="modal-body">
+                <h4><i class="fas fa-arrow-down"></i> Langkah 1: Upload Dataset</h4>
+                <p>Klik area upload atau drag file CSV. Format: baris pertama = header (nama kolom), baris berikutnya = data.</p>
+                <p><code>age,gender,heart_attack</code><br><code>45,M,1</code></p>
+
+                <h4><i class="fas fa-bullseye"></i> Langkah 2: Pilih Target & Fitur</h4>
+                <p>Target = kolom yang ingin diprediksi (output). Fitur = kolom yang digunakan untuk memprediksi (input).</p>
+                <p>Pilih minimal 2 fitur agar model dapat belajar pola.</p>
+
+                <h4><i class="fas fa-robot"></i> Langkah 3: Pilih Algoritma</h4>
+                <p><strong>Perceptron:</strong> Cocok untuk klasifikasi binary sederhana.</p>
+                <p><strong>Hebb Rule:</strong> Pembelajaran asosiatif, cocok untuk pola bipolar.</p>
+                <p><strong>Delta Rule (LMS):</strong> Minimasi error dengan gradient descent.</p>
+                <p><strong>Backpropagation:</strong> Multi-layer, paling akurat untuk dataset kompleks.</p>
+
+                <h4><i class="fas fa-sliders"></i> Langkah 4: Atur Parameter</h4>
+                <p><strong>Learning Rate (α):</strong> 0.01-0.5 (kecil = lambat, besar = cepat tapi bisa unstable)</p>
+                <p><strong>Max Epoch:</strong> 200-500 (iterasi training)</p>
+                <p><strong>Threshold:</strong> 0.5 (batas keputusan untuk output)</p>
+
+                <h4><i class="fas fa-play"></i> Langkah 5: Training</h4>
+                <p>Klik <strong>Auto Run</strong> untuk training otomatis, atau <strong>Fast Train</strong> setelah Reset.</p>
+                <p>Lihat grafik error — harus turun seiring epoch bertambah.</p>
+
+                <h4><i class="fas fa-check"></i> Langkah 6: Prediksi</h4>
+                <p>Setelah training selesai, isi input fitur baru di panel "Uji Model", lalu klik "Prediksi Sekarang".</p>
+
+                <h4><i class="fas fa-download"></i> Download Model</h4>
+                <p>Klik tombol "Download Model" untuk menyimpan weights, bias, dan konfigurasi sebagai JSON.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/algorithms.js"></script>
+    <script src="js/dataloader.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

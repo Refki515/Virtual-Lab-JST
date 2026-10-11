@@ -1,0 +1,122 @@
+========================================
+VIRTUAL LAB JST - UNIVERSAL DATASET
+Supervised Learning dengan Upload CSV
+========================================
+
+CARA PAKAI:
+-----------
+
+1. BUKA FILE
+   - Double-click: index.html
+   - Atau drag ke browser
+
+2. UPLOAD DATASET
+   - Klik area upload atau drag CSV
+   - Format: baris 1 = header (nama kolom), baris selanjutnya = data
+   - Contoh sudah ada: sample_dataset.csv
+   
+   Setelah upload:
+   ✓ Target kolom otomatis terpilih (kolom binary terakhir)
+   ✓ Semua fitur otomatis tercentang
+   ✓ Model siap training (sudah auto-reset)
+   ✓ Info dataset muncul di atas
+
+3. TRAINING
+   - Klik "Auto Run" untuk training otomatis sampai selesai
+   - Atau "Fast Train" untuk training cepat
+   - Lihat grafik error turun, epoch bertambah
+   - Status berubah: Siap → Training... → Selesai
+
+4. PREDIKSI
+   - Setelah training selesai, isi nilai fitur di panel "Uji Model"
+   - Klik "Prediksi Sekarang"
+   - Hasil: Positif/Negatif dengan skor confidence
+
+5. DOWNLOAD MODEL
+   - Klik "Download Model (JSON)"
+   - File berisi weights, bias, normalisasi, encoder
+
+ALGORITMA:
+----------
+- Perceptron: step function, cocok klasifikasi binary sederhana
+- Hebb Rule: pembelajaran asosiatif
+- Delta Rule (LMS): gradient descent, linear output
+- Backpropagation: multi-layer, paling akurat
+
+PARAMETER:
+----------
+- Learning Rate: 0.01-0.5 (kecil=lambat tapi stabil)
+- Max Epoch: 200-500 (iterasi training)
+- Threshold: 0.5 (batas keputusan output)
+- Hidden Layer: 5-20 (untuk Backpropagation saja)
+
+VERIFIKASI SETELAH UPLOAD:
+---------------------------
+✓ Info dataset muncul (jumlah records & kolom)
+✓ Log console tampil: "Dataset terverifikasi..."
+✓ Target dropdown sudah terisi
+✓ Fitur checkbox sudah tercentang
+✓ Tombol "Auto Run" aktif (tidak disabled)
+✓ Stats menunjukkan "Siap"
+
+TROUBLESHOOTING:
+----------------
+Q: Setelah upload, tombol masih disabled?
+A: Refresh browser, pastikan minimal 2 baris data (header + 1 data)
+
+Q: Training tidak jalan?
+A: Cek console log, pastikan target & fitur sudah terpilih
+
+Q: Error tidak turun?
+A: Turunkan learning rate, atau ganti algoritma ke Backpropagation
+
+Q: Prediksi salah?
+A: Training belum convergence, tambah epoch atau ubah learning rate
+
+FITUR AUTO:
+-----------
+✓ Auto-detect delimiter CSV (koma, semicolon, tab)
+✓ Auto-detect tipe kolom (numeric, binary, categorical)
+✓ Auto-pilih target kolom (binary terakhir)
+✓ Auto-centang semua fitur
+✓ Auto-reset setelah upload (langsung siap training)
+✓ Auto-normalisasi (min-max untuk numeric)
+✓ Auto-encoding (label encoding untuk categorical)
+
+STRUKTUR FILE:
+--------------
+virtual_lab_jst_universal/
+├── index.html              (Main page)
+├── css/
+│   └── style.css          (Styling)
+├── js/
+│   ├── algorithms.js      (4 algoritma JST)
+│   ├── dataloader.js      (Parser CSV universal)
+│   ├── visualizer.js      (Canvas + Chart.js)
+│   └── app.js             (Controller utama)
+├── sample_dataset.csv     (Contoh dataset)
+├── README.md              (Dokumentasi lengkap)
+└── PANDUAN.txt            (File ini)
+
+TESTED:
+-------
+✓ Upload CSV → auto-select target & features
+✓ Auto Run → training langsung jalan
+✓ Fast Train → training cepat dengan progress
+✓ Chart error → update realtime
+✓ Prediksi → hasil akurat
+✓ Download model → JSON valid
+
+BUG FIXED:
+----------
+✓ columnSelector.innerHTML = '' → tidak hapus container
+✓ Hebb Rule → tambah return error
+✓ Dataset info → display:flex setelah upload
+✓ Auto Run → otomatis reset, tidak perlu klik Reset manual
+✓ Fast Train → tidak butuh Reset dulu
+✓ Training loop → pakai requestAnimationFrame agar tidak block UI
+
+========================================
+Build: 11 Oktober 2026
+Verified: All features working
+========================================
